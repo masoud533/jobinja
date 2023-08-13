@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 from http.client import responses
 from lxml import etree
 
+salary_xpath = '/html/body/div/div[4]/div[1]/div[1]'
 
 def pageData(url, selector, selector_type) -> dict:
     # selector and selector_type will be added soon
@@ -11,8 +12,10 @@ def pageData(url, selector, selector_type) -> dict:
     if responses[page.status_code] == 'OK':
         try:
             soup = BeautifulSoup(page.content, 'html.parser')
+            html = etree.HTML(str(soup))
             data['title'] = soup.find(class_='c-jobView__titleText').text.replace('\n', '').replace('استخدام', '').strip()
-
+            salary = html.xpath(salary_xpath)
+            data['salary'] = html.xpath(salary_xpath)[0].text
             print(data)
         except:
             raise Exception('something is wrong!!!')
